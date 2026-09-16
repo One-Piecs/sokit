@@ -26,8 +26,8 @@ from PIL import Image, ImageDraw, ImageOps
 
 CANVAS = 1024          # final canvas size
 SUPER = 4              # supersampling factor while drawing
-PADDING = 100          # apple style margin around the rounded square
-RADIUS = 185           # corner radius of the rounded square
+PADDING = 0            # the rounded square fills the whole canvas
+RADIUS = 230           # corner radius of the rounded square (0.2245 * canvas)
 
 TOP = (88, 162, 248)       # tile gradient, top
 BOTTOM = (22, 86, 190)     # tile gradient, bottom
