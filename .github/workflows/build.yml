@@ -21,11 +21,6 @@ jobs:
         with:
           arch: x64
 
-      # the qt installer script is not ready for the newest python yet
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - uses: jurplel/install-qt-action@v4
         with:
           version: "6.8.3"
@@ -70,10 +65,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install build dependencies
+      - name: Install Qt 6 and build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
+            qt6-base-dev \
+            qt6-base-dev-tools \
+            qt6-l10n-tools \
             libgl1-mesa-dev \
             libxkbcommon-x11-0 \
             libxcb-cursor0 \
@@ -84,23 +82,14 @@ jobs:
             libxcb-render-util0 \
             libxcb-shape0 \
             libxcb-xfixes0
-
-      # the qt installer script is not ready for the newest python yet
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - uses: jurplel/install-qt-action@v4
-        with:
-          version: "6.8.3"
-          arch: gcc_64
-          cache: true
+          # linuxdeploy looks for a plain "qmake"
+          sudo ln -sf "$(command -v qmake6)" /usr/local/bin/qmake
 
       - name: Build
         run: |
           set -o pipefail
           cd build/qmake
-          qmake sokit.pro 2>&1 | tee ../../build.log
+          qmake6 sokit.pro 2>&1 | tee ../../build.log
           make -j"$(nproc)" 2>&1 | tee -a ../../build.log
 
       - name: Report build log on failure
