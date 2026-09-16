@@ -1,6 +1,7 @@
 #include <QTabWidget>
 #include <QShortcut>
 #include <QFontDatabase>
+#include <QCoreApplication>
 
 #include "toolkit.h"
 #include "setting.h"
@@ -65,6 +66,13 @@ bool Sokit::initTranslator()
         << "../share/" SET_APP_NAME
         << "../share/apps/" SET_APP_NAME
 		<< Setting::path();
+
+	// also look beside the executable and inside a macOS application bundle
+	// (sokit.app/Contents/Resources), so the packaged app finds sokit.lan
+	QString appdir = QCoreApplication::applicationDirPath();
+	paths << appdir
+		<< appdir + "/../Resources"
+		<< appdir + "/../share/" SET_APP_NAME;
 
 	foreach (QString p, paths)
 	{

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=sokit
+Comment=TCP & UDP package send/receive/transfer tool
+Exec=sokit
+Icon=sokit
+Terminal=false
+Categories=Network;Utility;

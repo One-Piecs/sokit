@@ -1,3 +1,8 @@
 /bin
 /out
 /tmp
+.DS_Store
+/build/qmake/Makefile
+/build/qmake/.qmake.stash
+/build/macosx/icon.iconset
+/build/macosx/sokit.icns

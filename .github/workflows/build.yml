@@ -1,0 +1,137 @@
+name: build
+
+on:
+  push:
+    branches: [master, main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows (x64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: "5.15.2"
+          arch: win64_msvc2019_64
+          cache: true
+
+      - name: Build
+        shell: cmd
+        run: |
+          cd build\qmake
+          qmake sokit.pro
+          nmake
+
+      - name: Collect files
+        shell: cmd
+        run: |
+          mkdir dist
+          copy bin\win\sokit.exe dist\
+          copy bin\win\sokit.lan dist\
+          windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw dist\sokit.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sokit-windows-x64
+          path: dist/
+          if-no-files-found: error
+
+  linux:
+    name: Linux (x64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1-mesa-dev \
+            libxkbcommon-x11-0 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-shape0 \
+            libxcb-xfixes0
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: "5.15.2"
+          arch: gcc_64
+          cache: true
+
+      - name: Build
+        run: |
+          cd build/qmake
+          qmake sokit.pro
+          make -j"$(nproc)"
+
+      - name: Package (plain tarball)
+        run: |
+          mkdir -p dist
+          cp bin/linux/sokit dist/
+          cp bin/linux/sokit.lan dist/
+          tar -czf sokit-linux-x64.tar.gz -C dist .
+
+      - name: Package (AppImage, all Qt libraries included)
+        continue-on-error: true
+        run: |
+          export APPIMAGE_EXTRACT_AND_RUN=1
+          curl -fsSL -o linuxdeploy.AppImage \
+            https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          curl -fsSL -o linuxdeploy-plugin-qt.AppImage \
+            https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy.AppImage linuxdeploy-plugin-qt.AppImage
+          mkdir -p AppDir/usr/bin AppDir/usr/share/applications \
+                   AppDir/usr/share/icons/hicolor/32x32/apps
+          install -m755 bin/linux/sokit AppDir/usr/bin/sokit
+          install -m644 bin/linux/sokit.lan AppDir/usr/bin/sokit.lan
+          install -m644 build/linux86/sokit.desktop AppDir/usr/share/applications/sokit.desktop
+          install -m644 src/sokit/sokit.png AppDir/usr/share/icons/hicolor/32x32/apps/sokit.png
+          ./linuxdeploy.AppImage --appdir AppDir \
+            -d build/linux86/sokit.desktop -i src/sokit/sokit.png \
+            --plugin qt --output appimage
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sokit-linux-x64
+          path: |
+            sokit-linux-x64.tar.gz
+            sokit-*.AppImage
+          if-no-files-found: error
+
+  macos:
+    name: macOS (arm64)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt 5
+        run: brew install qt@5
+
+      - name: Build app bundle (Qt libraries bundled, ad-hoc signed)
+        run: ./build/macosx/build.sh
+
+      - name: Package
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent bin/macos/sokit.app sokit-macos-arm64.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sokit-macos-arm64
+          path: sokit-macos-arm64.zip
+          if-no-files-found: error
