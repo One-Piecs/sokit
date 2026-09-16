@@ -21,6 +21,11 @@ jobs:
         with:
           arch: x64
 
+      # the qt installer script is not ready for the newest python yet
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - uses: jurplel/install-qt-action@v4
         with:
           version: "6.8.3"
@@ -79,6 +84,11 @@ jobs:
             libxcb-render-util0 \
             libxcb-shape0 \
             libxcb-xfixes0
+
+      # the qt installer script is not ready for the newest python yet
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - uses: jurplel/install-qt-action@v4
         with:
