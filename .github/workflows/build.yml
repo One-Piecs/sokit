@@ -165,3 +165,48 @@ jobs:
           name: sokit-macos-arm64
           path: sokit-macos-arm64.zip
           if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux, macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: incoming
+
+      - name: Collect release files
+        run: |
+          set -e
+          ver="${GITHUB_REF_NAME#v}"
+          mkdir -p out
+          (cd incoming/sokit-windows-x64 && zip -qr "$GITHUB_WORKSPACE/out/sokit-${ver}-windows-x64.zip" .)
+          for f in incoming/sokit-linux-x64/*; do
+            case "$f" in
+              *.AppImage) cp "$f" "out/sokit-${ver}-linux-x64.AppImage" ;;
+              *.tar.gz)   cp "$f" "out/sokit-${ver}-linux-x64.tar.gz" ;;
+            esac
+          done
+          cp incoming/sokit-macos-arm64/sokit-macos-arm64.zip "out/sokit-${ver}-macos-arm64.zip"
+          ls -lh out
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: sokit ${{ github.ref_name }}
+          files: out/*
+          generate_release_notes: true
+          body: |
+            sokit 1.4 -- TCP & UDP package send/receive/transfer tool.
+
+            Downloads:
+            * Windows x64: unzip and run `sokit.exe`, the Qt libraries are included
+            * Linux x64: the `.AppImage`, `chmod +x` and run it, no installation needed
+              (the `.tar.gz` is the bare executable plus the language file)
+            * macOS arm64 (Apple Silicon): unzip and open `sokit.app`
+
+            The macOS bundle is signed ad-hoc, not with an Apple developer
+            certificate, so the first start may need a right click ->
+            "Open".
