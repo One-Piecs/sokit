@@ -77,7 +77,11 @@ macx {
     CONFIG += app_bundle
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
     QMAKE_INFO_PLIST = $$PWD/Info.plist
-    ICON = $$PWD/../macosx/sokit.icns
+
+    # build/macosx/build.sh generates the icon; a missing one is not fatal
+    exists($$PWD/../macosx/sokit.icns) {
+        ICON = $$PWD/../macosx/sokit.icns
+    }
 
     QMAKE_POST_LINK += && mkdir -p $$DESTDIR/sokit.app/Contents/Resources \
         && cp -f $$DESTDIR/sokit.lan $$DESTDIR/sokit.app/Contents/Resources/

@@ -42,7 +42,7 @@ if [ ! -f "$here/sokit.icns" ]; then
 		sips -z $((s * 2)) $((s * 2)) "$root/src/sokit/sokit.png" \
 			--out "$here/icon.iconset/icon_${s}x${s}@2x.png" >/dev/null
 	done
-	sips -s format icns "$here/icon.iconset/icon_512x512@2x.png" --out "$here/sokit.icns" >/dev/null
+	python3 "$here/icns.py" "$here/icon.iconset" "$here/sokit.icns"
 fi
 
 # --- compile --------------------------------------------------------------
