@@ -438,6 +438,21 @@ p, li { white-space: pre-wrap; }
         <source>sokit -- F1 for help</source>
         <translation type="unfinished">sokit -- F1获取帮助</translation>
     </message>
+    <message>
+        <location filename="main.cpp" line="183"/>
+        <source>&amp;File</source>
+        <translation>文件(&amp;F)</translation>
+    </message>
+    <message>
+        <location filename="main.cpp" line="185"/>
+        <source>New &amp;Instance</source>
+        <translation>新建实例(&amp;I)</translation>
+    </message>
+    <message>
+        <location filename="main.cpp" line="192"/>
+        <source>&amp;Quit</source>
+        <translation>退出(&amp;Q)</translation>
+    </message>
 </context>
 <context>
     <name>TransferForm</name>

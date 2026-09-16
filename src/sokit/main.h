@@ -15,11 +15,13 @@ public:
 
 	bool initTranslator();
 	bool initUI();
+	void initInstance();
 	void show();
 	void close();
 
 private slots:
 	void ontop();
+	void newInstance();
 
 private:
 	void initFont();

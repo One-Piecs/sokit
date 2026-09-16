@@ -20,6 +20,9 @@ public:
 	static QString get(const QString& section, const QString& key, const QString& def);
 
 	static QString path();
+	static QString instanceLabel();
+	static void useInstance(const QString& name);
+
 	static void save(const QString& section, const QString& prefix, const QComboBox& cmb, bool all=true);
 	static void lord(const QString& section, const QString& prefix, QComboBox& cmb, bool all=true);
 
@@ -27,7 +30,12 @@ public:
 	
 private:
 	Setting();
+	static QString basePath();
+	static QString selectPath();
+	static void seed(const QString& path, const QString& base);
 	static QSettings& storage();
+
+	static int s_instance;
 };
 
 #endif // __SETTING_H__

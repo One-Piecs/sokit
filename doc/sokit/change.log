@@ -7,6 +7,10 @@
     QVariant::fromValue(), key combinations use QKeyCombination and the widget
     constructors no longer accept 0 as window flags
     the macOS package is built against Qt 6 and requires macOS 13 or newer
+    several instances: on macOS a double click only brings up the window that
+    is already open, so File / New Instance (Cmd-N) starts a second copy.
+    Every instance uses its own settings, notepad and log directory
+    ("--instance NAME" picks a fixed one) and the title shows its number
 
 2026-09-16	bineyond<bineyond@gmail.com>
     version 1.4.1

@@ -33,6 +33,24 @@ changing the artwork in that script.
 Every push builds Windows, Linux and macOS packages on GitHub Actions, see
 ``.github/workflows/build.yml``.
 
+Several instances
+-----------------
+
+sokit can run more than once at the same time, which is handy when a few
+connections have to be watched side by side. On macOS a double click on the
+icon only brings up the window that is already open, so a second copy is
+started from ``File / New Instance`` (Cmd-N) or from the command line::
+
+	open -n bin/macos/sokit.app
+
+Every instance keeps its own settings, notepad and log directory -- normally
+``~/.sokit`` for the first one and ``~/.sokit-2``, ``~/.sokit-3`` ... for the
+next ones (started from a writable directory the files stay in that directory,
+as before, and the next instance uses ``<dir>-2``). A new instance starts from
+a copy of the first instance's settings, and ``--instance NAME`` uses
+``<dir>-NAME`` for a fixed profile. The window title shows which instance it
+is.
+
 License
 -------
 Sokit is licensed under GNU GPLv3 - see the ``LICENSE`` file.

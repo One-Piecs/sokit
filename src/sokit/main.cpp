@@ -2,6 +2,11 @@
 #include <QShortcut>
 #include <QFontDatabase>
 #include <QCoreApplication>
+#include <QMenuBar>
+#include <QMenu>
+#include <QProcess>
+#include <QFileInfo>
+#include <QDir>
 
 #include "toolkit.h"
 #include "setting.h"
@@ -173,8 +178,27 @@ bool Sokit::initUI()
     connect(k, SIGNAL(activated()), h, SLOT(exec()));
 	connect(t, SIGNAL(activated()), this, SLOT(ontop()));
 
-	m_wnd.setWindowTitle(translate("Sokit", "sokit -- F1 for help"));
+	// sokit runs as several independent instances, so every window shows which
+	// one it is (the first instance stays without a number)
+	QString title = translate("Sokit", "sokit -- F1 for help");
+	QString label = Setting::instanceLabel();
+	if (!label.isEmpty())
+		title += " [" + label + "]";
+
+	m_wnd.setWindowTitle(title);
 	m_wnd.setWindowIcon(QIcon(":/sokit.png"));
+
+	QMenu* file = m_wnd.menuBar()->addMenu(translate("Sokit", "&File"));
+
+	QAction* nw = file->addAction(translate("Sokit", "New &Instance"));
+	nw->setShortcut(QKeySequence::New);
+	connect(nw, SIGNAL(triggered()), this, SLOT(newInstance()));
+
+	file->addSeparator();
+
+	QAction* qt = file->addAction(translate("Sokit", "&Quit"));
+	qt->setShortcut(QKeySequence::Quit);
+	connect(qt, SIGNAL(triggered()), this, SLOT(close()));
 
 	QWidget* pnl = new QWidget(&m_wnd);
 	m_wnd.setCentralWidget(pnl);
@@ -212,9 +236,45 @@ void Sokit::ontop()
 	m_wnd.show();
 }
 
+void Sokit::newInstance()
+{
+	QString self = applicationFilePath();
+
+	#ifdef Q_OS_MAC
+	// a second copy of a bundle has to be started through launch services,
+	// running the executable inside it directly gives a window without a
+	// dock entry or menu bar
+	QDir dir(QFileInfo(self).absolutePath());
+	if (dir.dirName() == "MacOS" && dir.cdUp() && dir.dirName() == "Contents" &&
+		dir.cdUp() && dir.dirName().endsWith(".app"))
+	{
+		if (QProcess::startDetached("/usr/bin/open", QStringList() << "-n" << dir.absolutePath()))
+			return;
+	}
+	#endif
+
+	QProcess::startDetached(self, QStringList());
+}
+
+void Sokit::initInstance()
+{
+	QStringList args = arguments();
+
+	for (int i = 1; i < args.count(); ++i)
+	{
+		if ((args[i] == "-i" || args[i] == "--instance") && (i + 1 < args.count()))
+		{
+			Setting::useInstance(args[i + 1]);
+			break;
+		}
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	Sokit a(argc, argv);
+
+	a.initInstance();
 
 	if (a.initUI())
 		a.show();
