@@ -52,11 +52,11 @@ void BaseForm::initLogger(QCheckBox* w, QToolButton* c, QTreeWidget* o, QPlainTe
 
 	bindFocus(o, Qt::Key_F3);
 
-	QShortcut* wr = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
-	QShortcut* cl = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_D), this);
+	QShortcut* wr = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
+	QShortcut* cl = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_D), this);
 	QShortcut* sl = new QShortcut(QKeySequence(Qt::Key_F4), this);
 
-	sl->setProperty(PROP_TARG, qVariantFromValue((void*)d));
+	sl->setProperty(PROP_TARG, QVariant::fromValue((void*)d));
 
 	connect(wr, SIGNAL(activated()), w, SLOT(click()));
 	connect(sl, SIGNAL(activated()), this, SLOT(hotOutput()));
@@ -70,8 +70,8 @@ void BaseForm::initLister(QToolButton* a, QToolButton* k, QListWidget* l)
 {
 	m_cnlist = l;
 
-	QShortcut* sk = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_K), this);
-	QShortcut* sa = new QShortcut(QKeySequence(Qt::ALT  + Qt::Key_A), this);
+	QShortcut* sk = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_K), this);
+	QShortcut* sa = new QShortcut(QKeySequence(Qt::ALT | Qt::Key_A), this);
 
 	connect(sk, SIGNAL(activated()), this, SLOT(kill()));
 	connect(sa, SIGNAL(activated()), m_cnlist, SLOT(selectAll()));
@@ -84,33 +84,33 @@ void BaseForm::initLister(QToolButton* a, QToolButton* k, QListWidget* l)
 
 void BaseForm::bindBuffer(qint32 id, QLineEdit* e, QToolButton* s, QComboBox* d)
 {
-	s->setProperty(PROP_EDIT, qVariantFromValue((void*)e));
-	s->setProperty(PROP_DIRT, qVariantFromValue((void*)d));
+	s->setProperty(PROP_EDIT, QVariant::fromValue((void*)e));
+	s->setProperty(PROP_DIRT, QVariant::fromValue((void*)d));
 
 	connect(s, SIGNAL(released()), this, SLOT(send()));
 
-	bindClick(s, Qt::Key_0 + id + Qt::CTRL);
-	bindFocus(e, Qt::Key_0 + id + Qt::ALT);
-	bindFocus(d, Qt::Key_0 + id + Qt::CTRL + Qt::SHIFT);
+	bindClick(s, Qt::CTRL | (Qt::Key)(Qt::Key_0 + id));
+	bindFocus(e, Qt::ALT | (Qt::Key)(Qt::Key_0 + id));
+	bindFocus(d, Qt::CTRL | Qt::SHIFT | (Qt::Key)(Qt::Key_0 + id));
 }
 
-void BaseForm::bindFocus(QWidget* w, qint32 k)
+void BaseForm::bindFocus(QWidget* w, KeyBinding k)
 {
 	QShortcut* s = new QShortcut(QKeySequence(k), this);
-	s->setProperty(PROP_TARG, qVariantFromValue((void*)w));
+	s->setProperty(PROP_TARG, QVariant::fromValue((void*)w));
 	connect(s, SIGNAL(activated()), this, SLOT(focus()));
 }
 
-void BaseForm::bindClick(QAbstractButton* b, qint32 k)
+void BaseForm::bindClick(QAbstractButton* b, KeyBinding k)
 {
 	QShortcut* s = new QShortcut(QKeySequence(k), this);
 	connect(s, SIGNAL(activated()), b, SLOT(click()));
 }
 
-void BaseForm::bindSelect(QComboBox* b, qint32 i, qint32 k)
+void BaseForm::bindSelect(QComboBox* b, qint32 i, KeyBinding k)
 {
 	QShortcut* s = new QShortcut(QKeySequence(k), this);
-	s->setProperty(PROP_TARG, qVariantFromValue((void*)b));
+	s->setProperty(PROP_TARG, QVariant::fromValue((void*)b));
 	s->setObjectName(QString::number(i));
 
 	connect(s, SIGNAL(activated()), this, SLOT(select()));

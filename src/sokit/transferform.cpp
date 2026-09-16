@@ -87,9 +87,9 @@ bool TransferForm::initForm()
 bool TransferForm::initHotkeys()
 {
 	bindFocus(m_ui.cmbSrcAddr, Qt::Key_Escape);
-	bindClick(m_ui.btnTrigger,  Qt::CTRL + Qt::Key_S);
-	bindSelect(m_ui.cmbType, 0, Qt::CTRL + Qt::Key_T);
-	bindSelect(m_ui.cmbType, 1, Qt::CTRL + Qt::Key_U);
+	bindClick(m_ui.btnTrigger,  Qt::CTRL | Qt::Key_S);
+	bindSelect(m_ui.cmbType, 0, Qt::CTRL | Qt::Key_T);
+	bindSelect(m_ui.cmbType, 1, Qt::CTRL | Qt::Key_U);
 
 	return true;
 }

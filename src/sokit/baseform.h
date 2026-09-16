@@ -5,6 +5,15 @@
 #include "logger.h"
 #include <QToolButton>
 #include <QComboBox>
+#include <QKeySequence>
+
+// Qt 6 expresses "a key plus its modifiers" as a QKeyCombination, Qt 5 as a
+// plain int, so the shortcut helpers below take whichever applies
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+typedef QKeyCombination KeyBinding;
+#else
+typedef int KeyBinding;
+#endif
 
 class QLabel;
 class QListWidget;
@@ -13,7 +22,7 @@ class BaseForm : public QWidget
 	Q_OBJECT
 
 public:
-    BaseForm(QWidget* p=0, Qt::WindowFlags f=0);
+    BaseForm(QWidget* p=0, Qt::WindowFlags f=Qt::WindowFlags());
 	virtual ~BaseForm();
 
 	bool init();
@@ -27,9 +36,9 @@ protected:
 	void initLogger(QCheckBox* w, QToolButton* c, QTreeWidget* o, QPlainTextEdit* d);
 	void initLister(QToolButton* a, QToolButton* k, QListWidget* l);
 	void bindBuffer(qint32 id, QLineEdit* e, QToolButton* s, QComboBox* d);
-	void bindFocus(QWidget* w, qint32 k);
-	void bindClick(QAbstractButton* b, qint32 k);
-	void bindSelect(QComboBox* b, qint32 i, qint32 k);
+	void bindFocus(QWidget* w, KeyBinding k);
+	void bindClick(QAbstractButton* b, KeyBinding k);
+	void bindSelect(QComboBox* b, qint32 i, KeyBinding k);
 
 	void listerSelected(QStringList& output);
 

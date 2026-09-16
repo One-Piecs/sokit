@@ -270,8 +270,8 @@ void TransferSktTcp::newConnection()
 			}
 			else
 			{
-				src->setProperty(PROP_CONN, qVariantFromValue((void*)conn));
-				dst->setProperty(PROP_CONN, qVariantFromValue((void*)conn));
+				src->setProperty(PROP_CONN, QVariant::fromValue((void*)conn));
+				dst->setProperty(PROP_CONN, QVariant::fromValue((void*)conn));
 
 				conn->src = src;
 				conn->dst = dst;
@@ -280,13 +280,13 @@ void TransferSktTcp::newConnection()
 				connect(src, SIGNAL(readyRead()), this, SLOT(newData()));
 				connect(src, SIGNAL(destroyed(QObject*)), this, SLOT(close(QObject*)));
 				connect(src, SIGNAL(disconnected()), src, SLOT(deleteLater()));
-				connect(src, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+				connect(src, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 
 				connect(dst, SIGNAL(readyRead()), this, SLOT(newData()));
 				connect(dst, SIGNAL(destroyed(QObject*)), this, SLOT(close(QObject*)));
 				connect(dst, SIGNAL(disconnected()), dst, SLOT(deleteLater()));
 				connect(dst, SIGNAL(connected()), this, SLOT(asynConnection()));
-				connect(dst, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+				connect(dst, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 
 				dst->connectToHost(dstAddr(), dstPort());
 
@@ -413,7 +413,7 @@ bool TransferSktUdp::open()
 	if (m_server.bind(srcAddr(), srcPort(), QUdpSocket::ShareAddress))
 	{
 		connect(&m_server, SIGNAL(readyRead()), this, SLOT(newData()));
-		connect(&m_server, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+		connect(&m_server, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 		connect(&m_timer, SIGNAL(timeout()), this, SLOT(check()));
 
 		m_timer.start(2000);
@@ -496,7 +496,7 @@ void TransferSktUdp::newData()
 					}
 					else
 					{
-						dst->setProperty(PROP_CONN, qVariantFromValue((void*)conn));
+						dst->setProperty(PROP_CONN, QVariant::fromValue((void*)conn));
 
 						conn->dst  = dst;
 						conn->key  = TK::ipstr(addr, port);
@@ -505,7 +505,7 @@ void TransferSktUdp::newData()
 
 						connect(dst, SIGNAL(readyRead()), this, SLOT(newData()));
 						connect(dst, SIGNAL(destroyed(QObject*)), this, SLOT(close(QObject*)));
-						connect(dst, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+						connect(dst, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 
 						dst->connectToHost(dstAddr(), dstPort());
 

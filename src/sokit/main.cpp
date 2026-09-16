@@ -19,6 +19,28 @@
 #define SET_VAL_LANG "sokit"
 #define SET_VAL_LANX ".lan"
 
+// Qt 6 turned QFontDatabase into a purely static class, older Qt wants an
+// instance, so both are wrapped here
+static QStringList fontFamilies()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return QFontDatabase::families();
+#else
+	QFontDatabase db;
+	return db.families();
+#endif
+}
+
+static bool fontSmoothlyScalable(const QString& family)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return QFontDatabase::isSmoothlyScalable(family);
+#else
+	QFontDatabase db;
+	return db.isSmoothlyScalable(family);
+#endif
+}
+
 Sokit::Sokit(int& argc, char** argv)
 :QApplication(argc,argv)
 {
@@ -89,8 +111,7 @@ bool Sokit::initTranslator()
 
 void Sokit::initFont()
 {
-	QFontDatabase db;
-	QStringList fs = db.families();
+	QStringList fs = fontFamilies();
 
 	QFont font;
 
@@ -101,7 +122,7 @@ void Sokit::initFont()
 
 	if (family.isEmpty() || fs.filter(family).isEmpty())
 	{
-		QStringList defs = translate("Sokit", "font").split(";", QString::SkipEmptyParts);
+		QStringList defs = translate("Sokit", "font").split(";", Qt::SkipEmptyParts);
 		foreach (QString d, defs)
 		{
 			family = d.section(',', 0, 0).trimmed();
@@ -123,7 +144,7 @@ void Sokit::initFont()
 	{
 		font.setFamily(family);
 
-		if (db.isSmoothlyScalable(family))
+		if (fontSmoothlyScalable(family))
 			font.setStyleStrategy((QFont::StyleStrategy)(QFont::PreferAntialias|QFont::PreferOutline|QFont::PreferQuality));
 
 		int nsize = size.toInt();

@@ -97,8 +97,8 @@ bool ServerForm::initForm()
 bool ServerForm::initHotkeys()
 {
 	bindFocus(m_ui.cmbTcpAddr, Qt::Key_Escape);
-	bindClick(m_ui.btnTcp,  Qt::CTRL + Qt::Key_T);
-	bindClick(m_ui.btnUdp,  Qt::CTRL + Qt::Key_U);
+	bindClick(m_ui.btnTcp,  Qt::CTRL | Qt::Key_T);
+	bindClick(m_ui.btnUdp,  Qt::CTRL | Qt::Key_U);
 
 	return true;
 }

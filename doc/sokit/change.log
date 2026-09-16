@@ -1,4 +1,14 @@
 2026-09-16	bineyond<bineyond@gmail.com>
+    version 1.5
+    build with QT v6.8 (the sources still build with QT v5.15)
+
+    ported to Qt 6: QFontDatabase became a purely static class, QAbstractSocket
+    renamed its error signal to errorOccurred, qVariantFromValue() turned into
+    QVariant::fromValue(), key combinations use QKeyCombination and the widget
+    constructors no longer accept 0 as window flags
+    the macOS package is built against Qt 6 and requires macOS 13 or newer
+
+2026-09-16	bineyond<bineyond@gmail.com>
     version 1.4.1
     build with QT v5.15
 

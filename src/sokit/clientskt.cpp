@@ -83,7 +83,7 @@ bool ClientSktTcp::open()
 	connect(&m_socket, SIGNAL(readyRead()), this, SLOT(newData()));
 	connect(&m_socket, SIGNAL(disconnected()), this, SLOT(closed()));
 	connect(&m_socket, SIGNAL(connected()), this, SLOT(asynConn()));
-	connect(&m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+	connect(&m_socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 
 	m_socket.connectToHost(addr(), port());
 
@@ -208,7 +208,7 @@ bool ClientSktUdp::open()
 	connect(&m_socket, SIGNAL(readyRead()), this, SLOT(newData()));
 	connect(&m_socket, SIGNAL(disconnected()), this, SLOT(closed()));
 	connect(&m_socket, SIGNAL(connected()), this, SLOT(asynConn()));
-	connect(&m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+	connect(&m_socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 
 	m_socket.connectToHost(addr(), port());
 

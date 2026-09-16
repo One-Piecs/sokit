@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, "codex/qt6"]
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
@@ -23,8 +23,8 @@ jobs:
 
       - uses: jurplel/install-qt-action@v4
         with:
-          version: "5.15.2"
-          arch: win64_msvc2019_64
+          version: "6.8.3"
+          arch: win64_msvc2022_64
           cache: true
 
       - name: Build
@@ -71,6 +71,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libgl1-mesa-dev \
             libxkbcommon-x11-0 \
+            libxcb-cursor0 \
             libxcb-icccm4 \
             libxcb-image0 \
             libxcb-keysyms1 \
@@ -81,7 +82,7 @@ jobs:
 
       - uses: jurplel/install-qt-action@v4
         with:
-          version: "5.15.2"
+          version: "6.8.3"
           arch: gcc_64
           cache: true
 
@@ -140,8 +141,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Qt 5
-        run: brew install qt@5
+      - name: Install Qt 6
+        run: |
+          brew unlink qt@5 >/dev/null 2>&1 || true
+          brew install qtbase qttools
 
       - name: Build app bundle (Qt libraries bundled, ad-hoc signed)
         run: |

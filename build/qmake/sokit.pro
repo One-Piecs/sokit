@@ -65,7 +65,17 @@ TRANSLATIONS += ../../src/sokit/sokit.ts
 RESOURCES += ../../src/sokit/icons.qrc
 
 # the UI language file is placed next to the binary / inside the bundle
-QMAKE_POST_LINK = $$[QT_INSTALL_BINS]/lrelease $$PWD/../../src/sokit/sokit.ts -qm $$DESTDIR/sokit.lan
+LRELEASE = $$[QT_INSTALL_BINS]/lrelease
+!exists($$LRELEASE) {
+    # lrelease lives in qttools, which is a separate package on some setups
+    LRELEASE = $$system(which lrelease 2>/dev/null)
+}
+
+!isEmpty(LRELEASE):exists($$LRELEASE) {
+    QMAKE_POST_LINK = $$LRELEASE $$PWD/../../src/sokit/sokit.ts -qm $$DESTDIR/sokit.lan
+} else {
+    message("lrelease not found, the UI language file will not be generated")
+}
 
 win32 {
     RC_FILE = ../../src/sokit/sokit.rc
@@ -75,7 +85,7 @@ win32 {
 
 macx {
     CONFIG += app_bundle
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
     QMAKE_INFO_PLIST = $$PWD/Info.plist
 
     # build/macosx/build.sh generates the icon; a missing one is not fatal

@@ -232,7 +232,7 @@ void ServerSktTcp::newConnection()
 		}
 		else
 		{
-			client->setProperty(PROP_CONN, qVariantFromValue((void*)conn));
+			client->setProperty(PROP_CONN, QVariant::fromValue((void*)conn));
 
 			conn->client = client;
 			conn->key = TK::ipstr(client->peerAddress(),client->peerPort(), true);
@@ -240,7 +240,7 @@ void ServerSktTcp::newConnection()
 			connect(client, SIGNAL(readyRead()), this, SLOT(newData()));
 			connect(client, SIGNAL(destroyed(QObject*)), this, SLOT(close(QObject*)));
 			connect(client, SIGNAL(disconnected()), client, SLOT(deleteLater()));
-			connect(client, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+			connect(client, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 
 			setCookie(conn->key, conn);
 		}
@@ -328,7 +328,7 @@ bool ServerSktUdp::open()
 	if (m_server.bind(addr(), port(), QUdpSocket::ShareAddress))
 	{
 		connect(&m_server, SIGNAL(readyRead()), this, SLOT(newData()));
-		connect(&m_server, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
+		connect(&m_server, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(error()));
 		connect(&m_timer, SIGNAL(timeout()), this, SLOT(check()));
 
 		m_timer.start(2000);

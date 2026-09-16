@@ -44,7 +44,7 @@ void Logger::init(QTreeWidget* o, QCheckBox* w, QPlainTextEdit* d)
 	if (m_treeOut && m_textOut && m_chkWrite)
 	{
 		QList<QKeySequence> ks;
-		ks << QKeySequence(Qt::CTRL + Qt::Key_D);
+		ks << QKeySequence(Qt::CTRL | Qt::Key_D);
 
 		QAction* copy = new QAction(tr("Copy"), this);
 		copy->setShortcuts(QKeySequence::Copy);

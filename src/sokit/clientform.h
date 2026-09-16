@@ -10,7 +10,7 @@ class ClientForm : public BaseForm
 	Q_OBJECT
 
 public:
-    ClientForm(QWidget* p=0, Qt::WindowFlags f=0);
+    ClientForm(QWidget* p=0, Qt::WindowFlags f=Qt::WindowFlags());
 	virtual ~ClientForm();
 
 protected:

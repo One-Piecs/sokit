@@ -14,7 +14,11 @@ root=$(cd "$here/../.." && pwd)
 
 # --- toolchain ------------------------------------------------------------
 if [ -z "$QMAKE" ]; then
-	for q in /opt/homebrew/opt/qt@5/bin/qmake /usr/local/opt/qt@5/bin/qmake qmake; do
+	for q in /opt/homebrew/opt/qtbase/bin/qmake \
+	         /opt/homebrew/opt/qt/bin/qmake \
+	         /usr/local/opt/qtbase/bin/qmake \
+	         /usr/local/opt/qt/bin/qmake \
+	         qmake6 qmake; do
 		if command -v "$q" >/dev/null 2>&1; then
 			QMAKE=$q
 			break
@@ -23,7 +27,7 @@ if [ -z "$QMAKE" ]; then
 fi
 
 if [ -z "$QMAKE" ]; then
-	echo "qmake not found. install Qt 5 first, e.g. 'brew install qt@5'" >&2
+	echo "qmake not found. install Qt first, e.g. 'brew install qtbase'" >&2
 	exit 1
 fi
 
@@ -51,7 +55,18 @@ make -j"$(sysctl -n hw.ncpu)"
 app="$root/bin/macos/sokit.app"
 
 echo "==> bundling Qt frameworks"
-"$MACDEPLOYQT" "$app" -always-overwrite
+# Qt modules can live in separate prefixes (qtbase, qtsvg, ...), so the Qt
+# installation's lib dir is handed to macdeployqt explicitly
+qtlibs=$("$QMAKE" -query QT_INSTALL_LIBS 2>/dev/null || true)
+[ -n "$qtlibs" ] || qtlibs=$(cd "$qtbin/.." && pwd)/lib
+
+"$MACDEPLOYQT" "$app" -always-overwrite -libpath="$qtlibs"
+
+# QtSvg is a separate module: if it was not bundled, drop the icon plugin
+# that depends on it instead of shipping a plugin that cannot be loaded
+if [ ! -d "$app/Contents/Frameworks/QtSvg.framework" ]; then
+	rm -rf "$app/Contents/PlugIns/iconengines/libqsvgicon.dylib"
+fi
 
 echo "==> signing (ad-hoc)"
 codesign --force --deep --sign - "$app"

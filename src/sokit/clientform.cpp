@@ -65,8 +65,8 @@ void ClientForm::saveConfig()
 bool ClientForm::initHotkeys()
 {
 	bindFocus(m_ui.cmbAddr, Qt::Key_Escape);
-	bindClick(m_ui.btnTcp,  Qt::CTRL + Qt::Key_T);
-	bindClick(m_ui.btnUdp,  Qt::CTRL + Qt::Key_U);
+	bindClick(m_ui.btnTcp,  Qt::CTRL | Qt::Key_T);
+	bindClick(m_ui.btnUdp,  Qt::CTRL | Qt::Key_U);
 	return true;
 }
 
