@@ -32,17 +32,10 @@ MACDEPLOYQT=${MACDEPLOYQT:-$qtbin/macdeployqt}
 LRELEASE=${LRELEASE:-$qtbin/lrelease}
 
 # --- application icon -----------------------------------------------------
-# sokit.png is only 32x32, so it is scaled up into an .icns container
+# the icon is drawn at high resolution and packed into an .icns container
 if [ ! -f "$here/sokit.icns" ]; then
 	echo "==> generating sokit.icns"
-	rm -rf "$here/icon.iconset"
-	mkdir -p "$here/icon.iconset"
-	for s in 16 32 128 256 512; do
-		sips -z $s $s "$root/src/sokit/sokit.png" --out "$here/icon.iconset/icon_${s}x${s}.png" >/dev/null
-		sips -z $((s * 2)) $((s * 2)) "$root/src/sokit/sokit.png" \
-			--out "$here/icon.iconset/icon_${s}x${s}@2x.png" >/dev/null
-	done
-	python3 "$here/icns.py" "$here/icon.iconset" "$here/sokit.icns"
+	python3 "$here/make-icon.py" "$root"
 fi
 
 # --- compile --------------------------------------------------------------

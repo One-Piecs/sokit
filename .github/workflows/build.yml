@@ -199,7 +199,8 @@ jobs:
           files: out/*
           generate_release_notes: true
           body: |
-            sokit 1.4 -- TCP & UDP package send/receive/transfer tool.
+            Cross platform builds of sokit, a TCP & UDP package
+            send/receive/transfer tool.
 
             Downloads:
             * Windows x64: unzip and run `sokit.exe`, the Qt libraries are included

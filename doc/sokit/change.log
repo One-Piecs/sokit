@@ -1,4 +1,12 @@
 2026-09-16	bineyond<bineyond@gmail.com>
+    version 1.4.1
+    build with QT v5.15
+
+    new application icon: the 32x32 artwork is redrawn at high resolution
+    (rounded square, blue hub), so it is sharp at every size -- 1024 down to
+    16 pixels -- on macOS, Windows and in the application window
+
+2026-09-16	bineyond<bineyond@gmail.com>
     version 1.4
     build with QT v5.15
 

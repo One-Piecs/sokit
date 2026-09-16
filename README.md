@@ -25,6 +25,10 @@ signs it, so it runs on a Mac without Qt installed::
 Legacy project files (Qt 4 era) are still in ``build/win32/vs2010`` and
 ``build/linux86/qtcreator``.
 
+The icon is drawn by ``build/macosx/make-icon.py`` (it writes the macOS
+``.icns``, the Windows ``.ico`` and ``src/sokit/sokit.png``), run it after
+changing the artwork in that script.
+
 Every push builds Windows, Linux and macOS packages on GitHub Actions, see
 ``.github/workflows/build.yml``.
 
