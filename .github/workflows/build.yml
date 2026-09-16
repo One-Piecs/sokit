@@ -31,8 +31,19 @@ jobs:
         shell: cmd
         run: |
           cd build\qmake
-          qmake sokit.pro
-          nmake
+          qmake sokit.pro > ..\..\build.log 2>&1
+          if errorlevel 1 ( type ..\..\build.log & exit /b 1 )
+          nmake >> ..\..\build.log 2>&1
+          if errorlevel 1 ( type ..\..\build.log & exit /b 1 )
+
+      - name: Report build log on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          if (Test-Path build.log) {
+            $msg = ((Get-Content build.log -Tail 30) -join "%0A")
+            Write-Host "::error::$msg"
+          }
 
       - name: Collect files
         shell: cmd
@@ -76,9 +87,18 @@ jobs:
 
       - name: Build
         run: |
+          set -o pipefail
           cd build/qmake
-          qmake sokit.pro
-          make -j"$(nproc)"
+          qmake sokit.pro 2>&1 | tee ../../build.log
+          make -j"$(nproc)" 2>&1 | tee -a ../../build.log
+
+      - name: Report build log on failure
+        if: failure()
+        run: |
+          if [ -f build.log ]; then
+            msg=$(tail -n 30 build.log | tr -d '\r' | awk '{printf "%s%%0A", $0}')
+            echo "::error::$msg"
+          fi
 
       - name: Package (plain tarball)
         run: |
@@ -124,7 +144,17 @@ jobs:
         run: brew install qt@5
 
       - name: Build app bundle (Qt libraries bundled, ad-hoc signed)
-        run: ./build/macosx/build.sh
+        run: |
+          set -o pipefail
+          bash -x ./build/macosx/build.sh 2>&1 | tee build.log
+
+      - name: Report build log on failure
+        if: failure()
+        run: |
+          if [ -f build.log ]; then
+            msg=$(tail -n 30 build.log | tr -d '\r' | awk '{printf "%s%%0A", $0}')
+            echo "::error::$msg"
+          fi
 
       - name: Package
         run: |
